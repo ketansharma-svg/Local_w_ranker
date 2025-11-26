@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/keyword-insights/components/insights/GainLosses.jsx", "src/app/keyword-insights/components/insights/KeywordPerformanceTrend.jsx", "src/app/keyword-insights/components/insights/CannibalizedKeywords.jsx", "src/components/link-analyzer/link-map-tab-canvas.jsx", "src/components/link-analyzer/AnchorTab/AnchorTypesDistribution.tsx", "src/components/link-analyzer/AnchorTab/AnchorsTrendsTab.tsx", "src/components/link-analyzer/BrokenLinksTab/BrokenLinksSummarySection.tsx", "src/components/link-analyzer/BrokenLinksTab/BrokenLinksTable.jsx", "src/components/link-analyzer/BrokenLinksTab/SmartSuggestions.jsx", "src/components/link-analyzer/Redirecttab/RedirectsSummary.tsx", "src/components/link-analyzer/Redirecttab/RedirectChainVisualizer.tsx", "src/components/link-analyzer/Redirecttab/RedirectSourcePageImpactDemo.tsx", "src/components/link-analyzer/Redirecttab/SmartSuggestionsSection.tsx", "src/components/link-analyzer/ExternalLinkTab/ExternalLinksTable.tsx", "src/components/link-analyzer/ExternalLinkTab/ExternalLinksSmartSuggestionsSection.tsx", "src/app/(team)/team-management/page.tsx", "src/app/(team)/team-management/PanelHeaderActiveMembersTable.jsx", "src/app/(team)/team-management/InviteMemberModal.jsx", "src/app/(team)/team-management/PendingInvitations.jsx", "src/app/(team)/team-management/ManageAccessModal.jsx", "src/app/(team)/team-analytics/DashboardUsageHeatmap.jsx", "src/app/(team)/team-analytics/UserEngagementTable.jsx", "src/app/(campaign)/campaign-activity/KPISummary.tsx", "src/app/(campaign)/campaign-activity/GanttChartView.jsx", "src/app/(campaign)/project-task-overview/KPISummaryCards.tsx", "src/app/(campaign)/project-task-overview/KanbanTaskViews.jsx", "src/app/(campaign)/project-task-overview/GanttTaskViews.jsx", "src/app/(campaign)/project-task-overview/TableTaskViews.jsx", "src/app/(campaign)/project-task-overview/Analytics&TeamActivity.jsx", "src/app/(campaign)/task-templates/TemplateBuilderDrawer.jsx", "src/app/(campaign)/project-task-overview/UniversalTaskCreationDrawer.tsx", "src/app/(campaign)/project-task-overview/page.jsx", "src/app/(campaign)/team-performance-board/PerformanceSummary(KPis).jsx", "src/app/(campaign)/campaign-activity/KanbanView.jsx", "src/components/link-analyzer/LinkMap/LinkMapCanvasDemo.jsx", "src/app/api/chat/WriterAutomated"],
+  "exclude": ["node_modules"]
+}

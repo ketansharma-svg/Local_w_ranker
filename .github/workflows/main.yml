@@ -1,0 +1,50 @@
+name: Deploy Wranker Next.js to Ubuntu Server
+
+on:
+  push:
+    branches: 
+      - main
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH and Deploy on Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "👉 Starting deployment on server: ${{ secrets.SSH_HOST }}"
+            set -e  # ❗ Exit on any error
+
+            echo "📁 Navigating to project directory"
+            cd ${{ secrets.SERVER_PATH }}
+
+            echo "🔄 Pulling latest changes from GitHub"
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "🧠 Loading NVM environment"
+            source ~/.nvm/nvm.sh
+
+            echo "🔢 Using Node.js version 18"
+            nvm use 18
+
+            echo "📦 Installing dependencies"
+            npm install
+
+            echo "🏗️ Building the Next.js app"
+            if npm run build; then
+              echo "✅ Build succeeded. Restarting the app..."
+              echo "🆕 Waiting for app to fully start (grace period)..."
+              sleep 10  # ⏳ Prevents 502 Bad Gateway during warm-up
+              pm2 restart wranker_frontend_nextjs
+            else
+              echo "❌ Build failed. Skipping PM2 restart."
+              exit 1  # 🔥 Mark GitHub Action as failed
+            fi
+
+            echo "✅ Deployment complete"

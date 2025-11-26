@@ -1,0 +1,75 @@
+name: Deploy Wranker Frontend Next.js to Ubuntu Server
+
+on:
+  push:
+    branches:
+      - staging
+
+# Prevent multiple long-running deploys stacking up
+concurrency:
+  group: staging-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH and Deploy on Server
+        # You can later pin this to a specific tag once you pick one
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "👉 Starting deployment on server: ${{ secrets.SSH_HOST }}"
+            set -euo pipefail
+            set -x
+
+            echo "📁 Navigating to project directory"
+            cd ${{ secrets.STAGING_SERVER_PATH }}
+
+            echo "🔄 Fetching latest changes from Git"
+            git fetch origin staging
+            git reset --hard origin/staging
+
+            echo "🧠 Loading NVM environment"
+            if [ -s "$HOME/.nvm/nvm.sh" ]; then
+              . "$HOME/.nvm/nvm.sh"
+            fi
+            nvm use 18
+
+            # Slight speed-ups and less noise
+            export NPM_CONFIG_FUND=false
+            export NPM_CONFIG_AUDIT=false
+
+            echo "📦 Checking if dependencies changed"
+            LOCKFILE="package-lock.json"
+            LOCK_HASH_FILE=".package-lock.hash"
+
+            if [ ! -f "$LOCKFILE" ]; then
+              echo "⚠️ package-lock.json not found; running npm ci once anyway"
+              npm ci --prefer-offline --no-audit --progress=false
+            elif [ ! -f "$LOCK_HASH_FILE" ] || ! cmp -s "$LOCKFILE" "$LOCK_HASH_FILE"; then
+              echo "🔁 Lockfile changed → clean install of dependencies"
+              rm -rf node_modules
+              npm ci --prefer-offline --no-audit --progress=false
+              cp "$LOCKFILE" "$LOCK_HASH_FILE"
+            else
+              echo "✅ Lockfile unchanged → reusing existing node_modules (skipping npm ci)"
+            fi
+
+            echo "🏗️ Building the Next.js app"
+            if npm run build; then
+              echo "✅ Build succeeded. Restarting the PM2 app..."
+              pm2 restart wranker_frontend_nextjs_staging --update-env
+              echo "🆕 Waiting for app to fully start (grace period)..."
+              sleep 10
+            else
+              echo "❌ Build failed. Skipping PM2 restart."
+              exit 1
+            fi
+
+            echo "✅ Deployment complete"
